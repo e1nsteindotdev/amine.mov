@@ -1,4 +1,6 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { useQuery } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 import { VideoCard, type VideoItem } from './VideoCard'
 import { VideoPlayerModal } from './VideoPlayerModal'
 import { Video, Mail, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
@@ -142,6 +144,15 @@ export const DUMMY_VIDEOS: VideoItem[] = [
 ]
 
 export function Home() {
+  let convexVideos: VideoItem[] | undefined
+  try {
+    convexVideos = useQuery(api.videos.list) as VideoItem[] | undefined
+  } catch {
+    convexVideos = undefined
+  }
+
+  const videos: VideoItem[] = convexVideos && convexVideos.length > 0 ? convexVideos : DUMMY_VIDEOS
+
   const [activeModalVideo, setActiveModalVideo] = useState<VideoItem | null>(null)
   const rowRef = useRef<HTMLDivElement>(null)
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -261,6 +272,7 @@ export function Home() {
               <span className="hover:text-[#f5d020] transition-colors cursor-default">Ideation</span>
               <span className="hover:text-[#f5d020] transition-colors cursor-default">Shooting</span>
               <span className="hover:text-[#f5d020] transition-colors cursor-default">Editing</span>
+              <a href="/dashboard" className="text-neutral-400 hover:text-[#f5d020] transition-colors">Dashboard</a>
             </nav>
 
             <a
@@ -333,7 +345,7 @@ export function Home() {
                   Selected Works
                 </h2>
                 <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-black text-amber-400">
-                  {DUMMY_VIDEOS.length}
+                  {videos.length}
                 </span>
               </div>
               <p className="text-xs text-slate-500 font-sans mt-0.5">
@@ -346,7 +358,7 @@ export function Home() {
               <div className="flex items-center gap-2">
                 <span className="font-mono text-xs font-bold text-slate-700 mr-1 select-none">
                   <span className="text-amber-600">{String(currentIndex + 1).padStart(2, '0')}</span>
-                  <span className="text-slate-400"> / {String(DUMMY_VIDEOS.length).padStart(2, '0')}</span>
+                  <span className="text-slate-400"> / {String(videos.length).padStart(2, '0')}</span>
                 </span>
                 <button
                   type="button"
@@ -387,7 +399,7 @@ export function Home() {
               onScroll={handleScroll}
               className="relative flex flex-nowrap overflow-x-auto w-full h-[520px] sm:h-[600px] md:h-[680px] lg:h-[720px] snap-x snap-mandatory scroll-smooth rounded-sm overflow-y-hidden hide-scrollbar gap-4 sm:gap-6 py-0.5"
             >
-              {DUMMY_VIDEOS.map((video, idx) => {
+              {videos.map((video, idx) => {
                 const isVertical = video.aspectRatio === '9:16'
                 const isSquare = video.aspectRatio === '1:1'
 
@@ -445,7 +457,7 @@ export function Home() {
 
           {/* Dots Indicator / Jump bar */}
           <div className="flex items-center justify-center gap-2 pt-1 pb-2">
-            {DUMMY_VIDEOS.map((v, i) => (
+            {videos.map((v, i) => (
               <button
                 key={v.id}
                 type="button"
@@ -477,6 +489,12 @@ export function Home() {
           </div>
 
           <div className="flex items-center gap-4 text-slate-600">
+            <a
+              href="/dashboard"
+              className="hover:text-black underline underline-offset-4 transition-colors font-medium text-amber-700"
+            >
+              Dashboard
+            </a>
             <a
               href="mailto:contact@amine.mov"
               className="hover:text-black underline underline-offset-4 transition-colors"

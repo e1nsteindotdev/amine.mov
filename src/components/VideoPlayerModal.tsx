@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { X, Play, Pause, Volume2, VolumeX, Maximize, Film } from 'lucide-react'
+import { X, Play, Pause, Volume2, VolumeX, Maximize } from 'lucide-react'
 import type { VideoItem } from './VideoCard'
 
 interface VideoPlayerModalProps {
